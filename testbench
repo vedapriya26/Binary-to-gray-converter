@@ -1,0 +1,38 @@
+module binary2grayconverter();
+parameter n=8;
+reg [n-1:0]bin;
+wire [n-1:0]gray;
+reg [n-1:0] exp_gray[0:((2**n)-1)];
+integer blk;
+ integer j;
+  integer i; 
+    integer errors=0;
+initial begin
+exp_gray[0] = 8'b00000000;
+    for (blk = 1; blk < (2**n); blk = blk * 2) begin
+      for (j = 0; j < blk; j = j + 1) begin
+        exp_gray[blk + j] = blk | exp_gray[blk - 1 - j];
+     end
+   end
+end
+bin2gray #(.n(n)) dut(bin,gray);
+initial  
+  begin
+     for(i=0;i<(2**n);i=i+1) 
+     begin
+         bin=i;
+         #5;
+     end
+     if(gray[i]!=exp_gray[i])
+        $display("error gray=%b",gray);
+        errors=errors+1;
+  end
+initial 
+    begin
+      if(errors==0)
+          $display("no errors");
+      else
+          $display(" errors=%d",errors); 
+       #400 $finish; 
+     end
+endmodule
